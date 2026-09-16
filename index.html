@@ -1,1 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Mina Mirazimi, PhD | Economist & Data Scientist</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: #18212b;
+      background: #ffffff;
+      line-height: 1.7;
+    }
+
+    nav {
+      max-width: 1120px;
+      margin: auto;
+      padding: 28px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .name {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    nav a {
+      color: #374151;
+      text-decoration: none;
+      margin-left: 28px;
+      font-size: 15px;
+    }
+
+    nav a:hover {
+      color: #2563eb;
+    }
+
+    .hero {
+      max-width: 1120px;
+      margin: auto;
+      padding: 100px 30px 110px;
+    }
+
+    .eyebrow {
+      color: #2563eb;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: clamp(48px, 7vw, 78px);
+      line-height: 1.05;
+      letter-spacing: -3px;
+      max-width: 850px;
+      margin-bottom: 25px;
+    }
+
+    .hero-text {
+      max-width: 760px;
+      font-size: 21px;
+      color: #56616f;
+    }
+
+    .specialties {
+      margin-top: 32px;
+      font-size: 16px;
+      color: #374151;
+    }
+
+    .buttons {
+      margin-top: 40px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 12px 21px;
+      margin-right: 10px;
+      border-radius: 7px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .primary {
+      background: #18212b;
+      color: white;
+    }
+
+    .secondary {
+      border: 1px solid #d1d5db;
+      color: #18212b;
+    }
+
+    section {
+      max-width: 1120px;
+      margin: auto;
+      padding: 80px 30px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    h2 {
+      font-size: 36px;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+
+    .section-intro {
+      color: #6b7280;
+      max-width: 700px;
+      margin-bottom: 38px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 22px;
+    }
+
+    .card {
+      padding: 28px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      transition: 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.07);
+    }
+
+    .tag {
+      font-size: 13px;
+      color: #2563eb;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .card h3 {
+      margin: 10px 0;
+      font-size: 21px;
+      line-height: 1.35;
+    }
+
+    .card p {
+      color: #667085;
+      font-size: 15px;
+    }
+
+    .card a {
+      display: inline-block;
+      margin-top: 18px;
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .about {
+      max-width: 800px;
+      font-size: 18px;
+      color: #4b5563;
+    }
+
+    footer {
+      max-width: 1120px;
+      margin: auto;
+      padding: 50px 30px;
+      border-top: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+      nav .links {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 70px;
+      }
+
+      h1 {
+        letter-spacing: -2px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<nav>
+  <div class="name">Mina Mirazimi, PhD</div>
+
+  <div class="links">
+    <a href="#articles">Articles</a>
+    <a href="#projects">Projects</a>
+    <a href="#research">Research</a>
+    <a href="#about">About</a>
+  </div>
+</nav>
+
+
+<header class="hero">
+
+  <div class="eyebrow">Economist · Data Scientist</div>
+
+  <h1>
+    Causal inference for better decisions.
+  </h1>
+
+  <p class="hero-text">
+    I am an economist and data scientist specializing in causal inference,
+    econometrics, experimentation, and applied machine learning. My work
+    focuses on moving from observed relationships to credible causal
+    questions—and translating quantitative evidence into decisions.
+  </p>
+
+  <div class="specialties">
+    Causal Inference · Econometrics · Experimentation ·
+    Heterogeneous Treatment Effects · Applied Machine Learning
+  </div>
+
+  <div class="buttons">
+    <a class="button primary" href="#projects">View Projects</a>
+
+    <a class="button secondary"
+       href="https://github.com/Mina-Mirazimi"
+       target="_blank">
+       GitHub
+    </a>
+  </div>
+
+</header>
+
+
+<section id="articles">
+
+  <h2>Causal Inference Notes</h2>
+
+  <p class="section-intro">
+    A series on modern causal inference, identification, and the
+    practical interpretation of causal estimates.
+  </p>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="tag">Causal Inference Notes #1</div>
+
+      <h3>
+        When Two-Way Fixed Effects Stop Identifying What You Think
+      </h3>
+
+      <p>
+        Staggered treatment adoption, heterogeneous treatment effects,
+        and why the familiar TWFE coefficient may not identify the
+        causal parameter we have in mind.
+      </p>
+    </div>
+
+
+    <div class="card">
+      <div class="tag">Causal Inference Notes #2</div>
+
+      <h3>
+        Beyond TWFE: What Are We Actually Averaging?
+      </h3>
+
+      <p>
+        Group-time treatment effects, dynamic effects, and why defining
+        the estimand must come before choosing the estimator.
+      </p>
+    </div>
+
+
+    <div class="card">
+      <div class="tag">Causal Inference Notes #3</div>
+
+      <h3>
+        Event Studies Under Staggered Treatment Adoption
+      </h3>
+
+      <p>
+        Event-time effects, contaminated comparisons, pre-trend testing,
+        and why a convincing graph cannot substitute for identification.
+      </p>
+    </div>
+
+
+    <div class="card">
+      <div class="tag">Causal Inference Notes #4</div>
+
+      <h3>
+        Beyond the Average Treatment Effect: Who Actually Benefits?
+      </h3>
+
+      <p>
+        Moving from ATE to CATE using causal machine learning,
+        causal forests, cross-fitting, and heterogeneous treatment effects.
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+
+<section id="projects">
+
+  <h2>Selected Projects</h2>
+
+  <p class="section-intro">
+    Reproducible empirical projects connecting modern econometric
+    methods with real data and decision problems.
+  </p>
+
+  <div class="grid">
+
+    <div class="card">
+
+      <div class="tag">Causal Machine Learning</div>
+
+      <h3>
+        Heterogeneous Effects of 401(k) Eligibility
+      </h3>
+
+      <p>
+        An empirical causal-ML workflow comparing raw associations,
+        regression adjustment, IPW, AIPW, Causal Forest DML, and
+        T-learners to study heterogeneous effects on household
+        net financial assets.
+      </p>
+
+      <a href="https://github.com/Mina-Mirazimi/causal-ml-heterogeneous-effects"
+         target="_blank">
+         View Project →
+      </a>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="tag">Modern Difference-in-Differences</div>
+
+      <h3>
+        Minimum Wage and Teen Employment
+      </h3>
+
+      <p>
+        A reproducible analysis of staggered treatment adoption,
+        comparing conventional TWFE event studies with modern
+        group-time treatment-effect estimators.
+      </p>
+
+      <a href="https://github.com/Mina-Mirazimi/modern-did-causal-inference"
+         target="_blank">
+         View Project →
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section id="research">
+
+  <h2>Research</h2>
+
+  <p class="about">
+    My research interests lie at the intersection of causal inference,
+    applied microeconomics, econometrics, and policy evaluation.
+    I am particularly interested in identification under treatment-effect
+    heterogeneity, staggered adoption, interference, and settings where
+    economic behavior complicates simple treatment-control comparisons.
+  </p>
+
+</section>
+
+
+<section id="about">
+
+  <h2>About</h2>
+
+  <p class="about">
+    I hold a PhD in Economics from a U.S. university, with additional
+    academic training in Economics, Applied Mathematics, and Industrial
+    Engineering.
+    <br><br>
+    I currently work at the University of California, Berkeley.
+    My quantitative interests include causal inference, econometrics,
+    experimentation, statistical modeling, and applied machine learning.
+  </p>
+
+</section>
+
+
+<footer>
+  © 2026 Mina Mirazimi · Economist & Data Scientist
+</footer>
+
+</body>
+</html>
