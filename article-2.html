@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Beyond TWFE: What Are We Actually Averaging? | Mina Mirazimi</title>
+
+  <meta name="description"
+        content="Causal Inference Notes by Mina Mirazimi: estimands, aggregation, event time, and interpretation in staggered difference-in-differences designs.">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Roboto, Helvetica, Arial, sans-serif;
+      color: #172033;
+      background: #ffffff;
+      line-height: 1.75;
+    }
+
+    .container {
+      width: min(900px, 90%);
+      margin: auto;
+    }
+
+    nav {
+      padding: 24px 0;
+      border-bottom: 1px solid #e8ebf0;
+    }
+
+    nav a {
+      color: #172033;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .hero {
+      padding: 85px 0 55px;
+    }
+
+    .tag {
+      color: #4967a9;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      font-size: clamp(38px, 6vw, 62px);
+      line-height: 1.08;
+      margin: 15px 0 25px;
+      letter-spacing: -2px;
+    }
+
+    .subtitle {
+      font-size: 21px;
+      color: #566074;
+      max-width: 780px;
+    }
+
+    article {
+      padding-bottom: 40px;
+    }
+
+    section {
+      padding: 30px 0;
+      border-top: 1px solid #edf0f4;
+    }
+
+    h2 {
+      font-size: 28px;
+      line-height: 1.25;
+      margin-bottom: 15px;
+    }
+
+    p {
+      color: #485267;
+      font-size: 17px;
+    }
+
+    .equation {
+      background: #f6f8fc;
+      padding: 22px 25px;
+      margin: 25px 0;
+      border-radius: 6px;
+      text-align: center;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 20px;
+      color: #273248;
+    }
+
+    .highlight {
+      background: #f6f8fc;
+      border-left: 4px solid #4967a9;
+      padding: 22px 25px;
+      margin: 25px 0;
+      border-radius: 4px;
+    }
+
+    .highlight p {
+      margin: 0;
+      color: #273248;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding: 35px 0;
+      border-top: 1px solid #e8ebf0;
+      color: #788195;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <nav>
+    <a href="index.html">← Back to Mina Mirazimi</a>
+  </nav>
+
+  <header class="hero">
+
+    <div class="tag">Causal Inference Notes · #2</div>
+
+    <h1>
+      Beyond TWFE: What Are We Actually Averaging in Staggered Difference-in-Differences?
+    </h1>
+
+    <p class="subtitle">
+      Why defining the estimand and aggregation rule matters when treatment
+      timing and treatment effects differ across groups.
+    </p>
+
+  </header>
+
+  <article>
+
+    <section>
+
+      <p>
+        Once we move beyond the simplest two-group, two-period
+        difference-in-differences design, a surprisingly basic question
+        becomes important:
+      </p>
+
+      <div class="highlight">
+        <p>
+          What treatment effect are we actually trying to estimate?
+        </p>
+      </div>
+
+      <p>
+        In staggered-adoption settings, different units receive treatment
+        at different times. Treatment effects may also vary across cohorts
+        and evolve with time since adoption.
+      </p>
+
+      <p>
+        That means there may be no single treatment effect waiting to be
+        recovered. Instead, there is a collection of economically meaningful
+        effects that can be aggregated in different ways.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Start With the Estimand</h2>
+
+      <p>
+        Suppose group <strong>g</strong> first receives treatment in period
+        <strong>g</strong>. A natural causal parameter is the
+        group-time average treatment effect:
+      </p>
+
+      <div class="equation">
+        ATT(g,t) =
+        E[Y<sub>t</sub>(1) − Y<sub>t</sub>(0) | G = g]
+      </div>
+
+      <p>
+        This asks: among units first treated in period g, what is the
+        average treatment effect at calendar time t?
+      </p>
+
+      <p>
+        Once we write the question this way, heterogeneity is not a
+        complication added after estimation. It is part of the object we
+        are trying to understand.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>A Marketplace Advertising Example</h2>
+
+      <p>
+        Imagine a marketplace introducing a sponsored-advertising product
+        across cities at different dates.
+      </p>
+
+      <p>
+        Some cities adopt early. Others adopt months later. The company
+        wants to know whether access to sponsored advertising increases
+        seller revenue.
+      </p>
+
+      <p>
+        But “the effect of advertising” may not be a single number.
+        Sellers may need time to learn how to use the product. Early
+        markets may have different seller composition. Effects may be
+        initially small and grow as adoption matures.
+      </p>
+
+      <p>
+        A treatment effect for a city one month after launch is therefore
+        not necessarily the same economic object as the treatment effect
+        twelve months after launch.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Calendar Time and Event Time Answer Different Questions</h2>
+
+      <p>
+        Calendar time tells us when an outcome was observed. Event time
+        tells us how long a unit has been exposed to treatment.
+      </p>
+
+      <div class="equation">
+        e = t − g
+      </div>
+
+      <p>
+        where <strong>e</strong> denotes event time.
+      </p>
+
+      <p>
+        An event-time effect can summarize treatment effects for units that
+        have been exposed for the same amount of time, even if they entered
+        treatment in different calendar periods.
+      </p>
+
+      <p>
+        This is often economically meaningful when treatment effects are
+        dynamic.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>There Is More Than One Reasonable Average</h2>
+
+      <p>
+        After estimating a collection of ATT(g,t) parameters, we may want
+        to summarize them. But several summaries are possible.
+      </p>
+
+      <p>
+        We could average across treated groups to obtain an overall
+        treatment effect. We could average within cohorts to understand
+        whether early and late adopters respond differently. Or we could
+        aggregate by event time to study how effects evolve after
+        treatment.
+      </p>
+
+      <div class="highlight">
+        <p>
+          Different aggregation rules answer different economic questions.
+          There is no reason to expect them to produce the same number.
+        </p>
+      </div>
+
+    </section>
+
+
+    <section>
+
+      <h2>The Weights Are Part of the Economic Question</h2>
+
+      <p>
+        Suppose a large cohort experiences a modest treatment effect while
+        a small cohort experiences a very large effect.
+      </p>
+
+      <p>
+        A population-weighted average emphasizes the experience of the
+        larger group. An equally weighted cohort average gives each cohort
+        the same influence.
+      </p>
+
+      <p>
+        Neither is automatically correct or incorrect. They answer
+        different questions.
+      </p>
+
+      <p>
+        This is why aggregation should not be treated as a mechanical final
+        step. The weighting scheme helps define the estimand itself.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>From Decision to Estimator</h2>
+
+      <p>
+        In applied work, I find it useful to reverse the usual workflow.
+        Instead of starting with a regression specification, start with
+        the decision that the analysis is intended to inform.
+      </p>
+
+      <div class="highlight">
+        <p>
+          Decision → Causal Question → Estimand → Identification Strategy
+          → Estimator
+        </p>
+      </div>
+
+      <p>
+        In the marketplace example, management might be deciding whether
+        to expand the advertising product nationally.
+      </p>
+
+      <p>
+        That decision may require understanding the average effect across
+        eligible markets. A product team might instead care about how
+        quickly benefits emerge after launch. Another team may care about
+        whether effects differ systematically across types of markets.
+      </p>
+
+      <p>
+        Those are related questions, but they are not the same estimand.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Why This Matters Beyond Difference-in-Differences</h2>
+
+      <p>
+        This issue is not unique to staggered DiD.
+      </p>
+
+      <p>
+        Many empirical disagreements that appear to be disagreements about
+        estimators are actually disagreements about the causal quantity
+        being estimated.
+      </p>
+
+      <p>
+        Before debating standard errors, specifications, or algorithms, it
+        is worth asking whether two analyses are even targeting the same
+        parameter.
+      </p>
+
+      <div class="highlight">
+        <p>
+          A statistically correct estimate of the wrong estimand can still
+          be causally uninformative for the decision we care about.
+        </p>
+      </div>
+
+    </section>
+
+
+    <section>
+
+      <h2>Takeaway</h2>
+
+      <p>
+        Staggered treatment timing forces us to confront something that is
+        easy to overlook in simpler designs: treatment effects can differ
+        across groups and across time.
+      </p>
+
+      <p>
+        Once that happens, asking for “the treatment effect” is incomplete.
+      </p>
+
+      <p>
+        We need to define whose effect, at what time, and with what
+        aggregation rule.
+      </p>
+
+      <p>
+        The estimator should come after those choices—not before them.
+      </p>
+
+    </section>
+
+  </article>
+
+  <footer>
+    © 2026 Mina Mirazimi · Causal Inference Notes
+  </footer>
+
+</div>
+
+</body>
+</html>
