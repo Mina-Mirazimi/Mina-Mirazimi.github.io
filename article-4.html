@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Beyond the Average Treatment Effect: Who Actually Benefits? | Mina Mirazimi</title>
+
+  <meta name="description"
+        content="Causal Inference Notes by Mina Mirazimi: heterogeneous treatment effects, causal forests, double machine learning, and a 401(k) empirical application.">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Roboto, Helvetica, Arial, sans-serif;
+      color: #172033;
+      background: #ffffff;
+      line-height: 1.75;
+    }
+
+    .container {
+      width: min(900px, 90%);
+      margin: auto;
+    }
+
+    nav {
+      padding: 24px 0;
+      border-bottom: 1px solid #e8ebf0;
+    }
+
+    nav a {
+      color: #172033;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .hero {
+      padding: 85px 0 55px;
+    }
+
+    .tag {
+      color: #4967a9;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      font-size: clamp(38px, 6vw, 62px);
+      line-height: 1.08;
+      margin: 15px 0 25px;
+      letter-spacing: -2px;
+    }
+
+    .subtitle {
+      font-size: 21px;
+      color: #566074;
+      max-width: 780px;
+    }
+
+    article {
+      padding-bottom: 40px;
+    }
+
+    section {
+      padding: 30px 0;
+      border-top: 1px solid #edf0f4;
+    }
+
+    h2 {
+      font-size: 28px;
+      line-height: 1.25;
+      margin-bottom: 15px;
+    }
+
+    p {
+      color: #485267;
+      font-size: 17px;
+    }
+
+    .equation {
+      background: #f6f8fc;
+      padding: 22px 25px;
+      margin: 25px 0;
+      border-radius: 6px;
+      text-align: center;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 20px;
+      color: #273248;
+      overflow-x: auto;
+    }
+
+    .highlight {
+      background: #f6f8fc;
+      border-left: 4px solid #4967a9;
+      padding: 22px 25px;
+      margin: 25px 0;
+      border-radius: 4px;
+    }
+
+    .highlight p {
+      margin: 0;
+      color: #273248;
+    }
+
+    .results {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 25px 0;
+      font-size: 16px;
+    }
+
+    .results th,
+    .results td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e5e9f0;
+      text-align: left;
+    }
+
+    .results th {
+      color: #273248;
+      background: #f6f8fc;
+    }
+
+    .button {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 12px 18px;
+      background: #172033;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding: 35px 0;
+      border-top: 1px solid #e8ebf0;
+      color: #788195;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <nav>
+    <a href="index.html">← Back to Mina Mirazimi</a>
+  </nav>
+
+  <header class="hero">
+
+    <div class="tag">Causal Inference Notes · #4</div>
+
+    <h1>
+      Beyond the Average Treatment Effect: Who Actually Benefits?
+    </h1>
+
+    <p class="subtitle">
+      From average treatment effects to causal machine learning,
+      heterogeneous effects, and the question of who responds to an
+      intervention—and by how much.
+    </p>
+
+  </header>
+
+
+  <article>
+
+    <section>
+
+      <p>
+        Much of applied causal inference begins with a deceptively simple
+        question: does the treatment work?
+      </p>
+
+      <p>
+        The average treatment effect gives us one answer.
+      </p>
+
+      <div class="equation">
+        ATE = E[Y(1) − Y(0)]
+      </div>
+
+      <p>
+        But an average can hide economically important heterogeneity.
+        The same intervention may generate large effects for some people,
+        small effects for others, and almost no effect for another group.
+      </p>
+
+      <div class="highlight">
+        <p>
+          The next causal question is not only “Does it work?” but
+          “For whom does it work—and by how much?”
+        </p>
+      </div>
+
+    </section>
+
+
+    <section>
+
+      <h2>From ATE to CATE</h2>
+
+      <p>
+        Conditional average treatment effects allow treatment effects to
+        vary with observed characteristics X:
+      </p>
+
+      <div class="equation">
+        τ(X) = E[Y(1) − Y(0) | X]
+      </div>
+
+      <p>
+        This moves the analysis from a single population average toward
+        systematic treatment-effect heterogeneity.
+      </p>
+
+      <p>
+        But there is an important distinction: discovering that an outcome
+        is predictable across groups is not the same as establishing that
+        the causal effect of treatment differs across those groups.
+      </p>
+
+      <div class="highlight">
+        <p>
+          Predictive heterogeneity is not automatically causal
+          heterogeneity.
+        </p>
+      </div>
+
+    </section>
+
+
+    <section>
+
+      <h2>A Practical Example: 401(k) Eligibility and Wealth</h2>
+
+      <p>
+        I built a companion empirical project in Python using a public
+        U.S. 401(k) dataset to study how eligibility for a 401(k) plan is
+        related to household net financial assets.
+      </p>
+
+      <p>
+        The dataset contains 9,915 households. The treatment is 401(k)
+        eligibility, the outcome is net financial assets, and the
+        adjustment set includes demographic and economic characteristics
+        such as age, income, education, family size, marital status,
+        dual-earner status, pension characteristics, IRA participation,
+        and homeownership.
+      </p>
+
+      <p>
+        The raw difference is striking.
+      </p>
+
+      <table class="results">
+        <tr>
+          <th>Group</th>
+          <th>Mean Net Financial Assets</th>
+        </tr>
+        <tr>
+          <td>Not eligible</td>
+          <td>$10,788.04</td>
+        </tr>
+        <tr>
+          <td>Eligible</td>
+          <td>$30,347.39</td>
+        </tr>
+        <tr>
+          <td><strong>Raw difference</strong></td>
+          <td><strong>$19,559.34</strong></td>
+        </tr>
+      </table>
+
+      <p>
+        But this is an observed association, not automatically a causal
+        effect. Households eligible for 401(k) plans may differ
+        systematically from households that are not eligible.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Adjustment Changes the Story</h2>
+
+      <p>
+        After adjusting for observed covariates, several estimators produce
+        substantially smaller effects than the raw difference.
+      </p>
+
+      <table class="results">
+        <tr>
+          <th>Estimator</th>
+          <th>Estimated Effect</th>
+        </tr>
+        <tr>
+          <td>Regression adjustment</td>
+          <td>$5,896.20</td>
+        </tr>
+        <tr>
+          <td>IPW</td>
+          <td>$7,975.02</td>
+        </tr>
+        <tr>
+          <td>AIPW</td>
+          <td>$7,748.07</td>
+        </tr>
+      </table>
+
+      <p>
+        The contrast is economically meaningful. A raw difference of
+        almost $19,600 falls substantially once observed differences
+        between eligible and noneligible households are taken into
+        account.
+      </p>
+
+      <div class="highlight">
+        <p>
+          Observed association ≠ average causal effect ≠ conditional
+          treatment effect.
+        </p>
+      </div>
+
+      <p>
+        A causal interpretation still depends on the identifying
+        assumptions—not simply on the estimator.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>When the Average Hides the Economics</h2>
+
+      <p>
+        An average effect around $8,000 is useful, but it does not tell us
+        whether the effect is approximately $8,000 for everyone.
+      </p>
+
+      <p>
+        To investigate heterogeneity, I estimated conditional treatment
+        effects using Causal Forest DML.
+      </p>
+
+      <p>
+        The estimated CATE distribution is right-skewed. The mean
+        estimated CATE is approximately <strong>$8,056</strong>, while
+        the median is approximately <strong>$5,864</strong>.
+      </p>
+
+      <p>
+        That difference already suggests that a single average does not
+        fully describe the estimated treatment-effect distribution.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Heterogeneity Across Income</h2>
+
+      <p>
+        One of the clearest empirical patterns appears when estimated
+        treatment effects are summarized by income quintile.
+      </p>
+
+      <table class="results">
+        <tr>
+          <th>Income Quintile</th>
+          <th>Mean Estimated CATE</th>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>$3,439.95</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>$3,057.88</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>$5,580.36</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>$10,348.30</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>$17,854.85</td>
+        </tr>
+      </table>
+
+      <p>
+        The pattern is not perfectly monotonic at the bottom of the income
+        distribution, but estimated effects become much larger among
+        higher-income households.
+      </p>
+
+      <p>
+        This should not be interpreted as evidence that income itself
+        causes greater responsiveness. Income may summarize many
+        correlated dimensions of household financial circumstances.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Heterogeneity Across Age</h2>
+
+      <p>
+        Estimated effects also differ across age groups.
+      </p>
+
+      <table class="results">
+        <tr>
+          <th>Age Group</th>
+          <th>Mean Estimated CATE</th>
+        </tr>
+        <tr>
+          <td>25–34</td>
+          <td>$4,948.07</td>
+        </tr>
+        <tr>
+          <td>35–44</td>
+          <td>$8,588.37</td>
+        </tr>
+        <tr>
+          <td>45–54</td>
+          <td>$10,808.12</td>
+        </tr>
+        <tr>
+          <td>55–65</td>
+          <td>$9,736.45</td>
+        </tr>
+      </table>
+
+      <p>
+        Again, these estimates describe conditional heterogeneity under
+        the maintained causal assumptions. They are not observed
+        individual treatment effects.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Why Use a Causal Forest?</h2>
+
+      <p>
+        Traditional subgroup analysis requires the researcher to specify
+        the dimensions of heterogeneity in advance.
+      </p>
+
+      <p>
+        Causal forests provide a flexible way to estimate how treatment
+        effects vary with a potentially richer set of covariates while
+        allowing nonlinearities and interactions.
+      </p>
+
+      <p>
+        Double machine learning and cross-fitting help separate nuisance
+        estimation from treatment-effect estimation and reduce the risk
+        that flexible prediction models simply overfit the same
+        observations used to estimate the causal parameter.
+      </p>
+
+      <p>
+        But the flexibility of machine learning does not solve the
+        fundamental identification problem.
+      </p>
+
+      <div class="highlight">
+        <p>
+          Machine learning improves estimation under an identification
+          strategy. It does not create the identification strategy.
+        </p>
+      </div>
+
+    </section>
+
+
+    <section>
+
+      <h2>A Different Learner, a Similar Pattern</h2>
+
+      <p>
+        As a robustness exercise, I also estimated heterogeneous effects
+        using a T-learner.
+      </p>
+
+      <table class="results">
+        <tr>
+          <th>Income Quintile</th>
+          <th>T-Learner Mean Effect</th>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>$3,827.66</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>$3,083.29</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>$4,997.08</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>$9,110.54</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>$16,176.25</td>
+        </tr>
+      </table>
+
+      <p>
+        The exact estimates differ, but the broad income gradient remains
+        similar across the two approaches.
+      </p>
+
+      <p>
+        Agreement across estimators is useful as a robustness check, but
+        it is not proof of causal identification. Two sophisticated
+        estimators can still share the same identifying assumptions.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Causal Machine Learning Does Not Eliminate Identification</h2>
+
+      <p>
+        Flexible algorithms can model complex relationships in the data,
+        but they cannot determine whether treatment assignment is
+        conditionally independent of potential outcomes.
+      </p>
+
+      <p>
+        In an observational setting such as this one, causal interpretation
+        requires assumptions such as conditional exchangeability and
+        positivity.
+      </p>
+
+      <p>
+        The overlap analysis in this project shows approximately 99.4%
+        common support, which is encouraging for estimation. But overlap
+        is necessary, not sufficient, for identification.
+      </p>
+
+      <div class="highlight">
+        <p>
+          A sophisticated estimator cannot rescue an unidentified causal
+          question.
+        </p>
+      </div>
+
+    </section>
+
+
+    <section>
+
+      <h2>From “Does It Work?” to “For Whom?”</h2>
+
+      <p>
+        The broader workflow is:
+      </p>
+
+      <div class="highlight">
+        <p>
+          Decision → Causal Question → Estimand → Identification →
+          Estimation → Heterogeneity → Validation → Interpretation
+        </p>
+      </div>
+
+      <p>
+        Prediction asks what is likely to happen. Causal inference asks
+        what would change if we intervened. Causal machine learning
+        extends that question:
+      </p>
+
+      <p>
+        <strong>For whom would it change—and by how much?</strong>
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Companion Empirical Project</h2>
+
+      <p>
+        The full Python workflow, including exploratory analysis,
+        propensity-score overlap, ATE estimation, Causal Forest DML,
+        heterogeneity analysis, and T-learner robustness checks, is
+        available in the companion GitHub repository.
+      </p>
+
+      <a class="button"
+         href="https://github.com/Mina-Mirazimi/causal-ml-heterogeneous-effects"
+         target="_blank"
+         rel="noopener noreferrer">
+        View Project on GitHub →
+      </a>
+
+    </section>
+
+
+    <section>
+
+      <h2>Takeaway</h2>
+
+      <p>
+        Average treatment effects remain useful. But when treatment
+        responses are heterogeneous, the average may hide exactly the
+        variation that matters for policy or product decisions.
+      </p>
+
+      <p>
+        Causal machine learning gives us powerful tools for investigating
+        that heterogeneity. The important word, however, remains
+        <em>causal</em>.
+      </p>
+
+      <p>
+        Identification comes first. Flexible estimation comes second.
+      </p>
+
+    </section>
+
+  </article>
+
+
+  <footer>
+    © 2026 Mina Mirazimi · Causal Inference Notes
+  </footer>
+
+</div>
+
+</body>
+</html>
