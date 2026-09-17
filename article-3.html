@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Event Studies Under Staggered Treatment Adoption | Mina Mirazimi</title>
+
+  <meta name="description"
+        content="Causal Inference Notes by Mina Mirazimi: event studies, staggered treatment adoption, pre-trends, contamination, and causal identification.">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Roboto, Helvetica, Arial, sans-serif;
+      color: #172033;
+      background: #ffffff;
+      line-height: 1.75;
+    }
+
+    .container {
+      width: min(900px, 90%);
+      margin: auto;
+    }
+
+    nav {
+      padding: 24px 0;
+      border-bottom: 1px solid #e8ebf0;
+    }
+
+    nav a {
+      color: #172033;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .hero {
+      padding: 85px 0 55px;
+    }
+
+    .tag {
+      color: #4967a9;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      font-size: clamp(38px, 6vw, 62px);
+      line-height: 1.08;
+      margin: 15px 0 25px;
+      letter-spacing: -2px;
+    }
+
+    .subtitle {
+      font-size: 21px;
+      color: #566074;
+      max-width: 780px;
+    }
+
+    article {
+      padding-bottom: 40px;
+    }
+
+    section {
+      padding: 30px 0;
+      border-top: 1px solid #edf0f4;
+    }
+
+    h2 {
+      font-size: 28px;
+      line-height: 1.25;
+      margin-bottom: 15px;
+    }
+
+    p {
+      color: #485267;
+      font-size: 17px;
+    }
+
+    .equation {
+      background: #f6f8fc;
+      padding: 22px 25px;
+      margin: 25px 0;
+      border-radius: 6px;
+      text-align: center;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 20px;
+      color: #273248;
+      overflow-x: auto;
+    }
+
+    .highlight {
+      background: #f6f8fc;
+      border-left: 4px solid #4967a9;
+      padding: 22px 25px;
+      margin: 25px 0;
+      border-radius: 4px;
+    }
+
+    .highlight p {
+      margin: 0;
+      color: #273248;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding: 35px 0;
+      border-top: 1px solid #e8ebf0;
+      color: #788195;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <nav>
+    <a href="index.html">← Back to Mina Mirazimi</a>
+  </nav>
+
+  <header class="hero">
+
+    <div class="tag">Causal Inference Notes · #3</div>
+
+    <h1>
+      Event Studies Under Staggered Treatment Adoption
+    </h1>
+
+    <p class="subtitle">
+      Why a convincing event-study graph is not automatically evidence
+      of credible causal identification.
+    </p>
+
+  </header>
+
+
+  <article>
+
+    <section>
+
+      <p>
+        Event-study plots have become one of the most recognizable tools
+        in applied causal inference.
+      </p>
+
+      <p>
+        They appear to offer several things at once: a visual assessment
+        of pre-treatment trends, an estimate of treatment dynamics, and
+        an intuitive picture of how outcomes evolve before and after an
+        intervention.
+      </p>
+
+      <p>
+        But in staggered-adoption settings, the familiar event-study
+        regression can become much harder to interpret.
+      </p>
+
+      <div class="highlight">
+        <p>
+          A convincing graph is not the same thing as credible
+          identification.
+        </p>
+      </div>
+
+    </section>
+
+
+    <section>
+
+      <h2>The Familiar Event-Study Specification</h2>
+
+      <p>
+        A conventional event-study regression often takes the form:
+      </p>
+
+      <div class="equation">
+        Y<sub>it</sub> =
+        α<sub>i</sub> + λ<sub>t</sub> +
+        Σ<sub>k ≠ -1</sub> β<sub>k</sub>
+        1{t − G<sub>i</sub> = k} +
+        ε<sub>it</sub>
+      </div>
+
+      <p>
+        Event time is measured relative to treatment adoption.
+        Negative values of k correspond to periods before treatment,
+        while positive values correspond to periods after treatment.
+      </p>
+
+      <p>
+        Researchers commonly plot the estimated coefficients and look
+        for two patterns: approximately flat coefficients before
+        treatment and economically meaningful changes afterward.
+      </p>
+
+      <p>
+        In the simplest settings, this can be informative. Under
+        staggered treatment timing and heterogeneous effects, however,
+        the coefficients may not have the interpretation we expect.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Where Contamination Comes From</h2>
+
+      <p>
+        When units adopt treatment at different dates, units at different
+        stages of treatment exposure coexist in the same calendar period.
+      </p>
+
+      <p>
+        Some units may be untreated. Some may have just entered treatment.
+        Others may have been treated for several periods.
+      </p>
+
+      <p>
+        In a conventional fixed-effects event study, these observations
+        can contribute to the same regression comparisons. If treatment
+        effects vary across cohorts or evolve over time, coefficients for
+        one event period can therefore reflect treatment effects from
+        other event periods.
+      </p>
+
+      <div class="highlight">
+        <p>
+          The coefficient labeled “two years after treatment” need not be
+          a clean average of effects exactly two years after treatment.
+        </p>
+      </div>
+
+    </section>
+
+
+    <section>
+
+      <h2>Why Pre-Treatment Coefficients Require Care</h2>
+
+      <p>
+        Event-study leads are frequently interpreted as tests of the
+        parallel-trends assumption.
+      </p>
+
+      <p>
+        The intuition is appealing: if treated and comparison units were
+        already moving differently before treatment, the pre-treatment
+        coefficients should reveal those differences.
+      </p>
+
+      <p>
+        But under staggered adoption and heterogeneous treatment effects,
+        conventional event-study coefficients can themselves be affected
+        by the structure of treatment timing and the comparisons embedded
+        in the regression.
+      </p>
+
+      <p>
+        This means that apparently small pre-treatment coefficients do
+        not, by themselves, establish the identifying assumption.
+      </p>
+
+      <div class="highlight">
+        <p>
+          “No significant pre-trend” is not equivalent to “parallel
+          trends has been proven.”
+        </p>
+      </div>
+
+    </section>
+
+
+    <section>
+
+      <h2>Parallel Trends Is an Assumption About Counterfactuals</h2>
+
+      <p>
+        The central identification problem in difference-in-differences
+        concerns an outcome we never observe: what would have happened
+        to treated units had they remained untreated?
+      </p>
+
+      <p>
+        Parallel trends provides a way to construct that counterfactual
+        using the evolution of an appropriate comparison group.
+      </p>
+
+      <p>
+        Pre-treatment data can help us assess whether the design is
+        plausible. But no graph can directly reveal the unobserved
+        post-treatment counterfactual.
+      </p>
+
+      <p>
+        That is why institutional knowledge, treatment timing, comparison
+        group construction, anticipation, and possible confounding shocks
+        remain central to identification.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Event Time Is Economically Useful</h2>
+
+      <p>
+        None of this means that event studies should be abandoned.
+      </p>
+
+      <p>
+        Event time is often exactly what we care about when treatment
+        effects are dynamic.
+      </p>
+
+      <div class="equation">
+        e = t − g
+      </div>
+
+      <p>
+        A policy may take time to affect behavior. A new product may
+        require learning. An advertising intervention may generate an
+        immediate response that later fades—or a small initial effect
+        that grows as adoption matures.
+      </p>
+
+      <p>
+        The objective is therefore not to eliminate event-time analysis,
+        but to estimate event-time effects using comparisons that match
+        the intended causal estimand.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Build the Event Study From Group-Time Effects</h2>
+
+      <p>
+        A useful approach is to begin with group-time average treatment
+        effects:
+      </p>
+
+      <div class="equation">
+        ATT(g,t) =
+        E[Y<sub>t</sub>(1) − Y<sub>t</sub>(0) | G = g]
+      </div>
+
+      <p>
+        These effects make treatment cohort and calendar time explicit.
+        They can then be aggregated according to event time to study
+        treatment dynamics.
+      </p>
+
+      <p>
+        This changes the workflow. Instead of beginning with a collection
+        of lead and lag coefficients and asking afterward what they mean,
+        we first define the relevant causal comparisons.
+      </p>
+
+      <div class="highlight">
+        <p>
+          Estimand → Comparison Group → Identification → Estimation →
+          Event-Time Aggregation
+        </p>
+      </div>
+
+    </section>
+
+
+    <section>
+
+      <h2>Statistical Inference Still Matters</h2>
+
+      <p>
+        Even with a well-defined estimand, uncertainty must be handled
+        carefully.
+      </p>
+
+      <p>
+        Event-study graphs display many coefficients simultaneously.
+        Looking at each confidence interval independently can encourage
+        overinterpretation of isolated estimates.
+      </p>
+
+      <p>
+        The dependence structure in panel data also matters. Standard
+        errors should reflect the level at which treatment assignment
+        and shocks are correlated, and inference should match the
+        structure of the research design.
+      </p>
+
+      <p>
+        Identification and inference solve different problems. A
+        correctly calculated standard error cannot rescue a contaminated
+        causal comparison.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>A Better Way to Read an Event-Study Graph</h2>
+
+      <p>
+        Before interpreting the shape of the graph, ask what comparisons
+        generated each point.
+      </p>
+
+      <p>
+        Who is treated at that event time? Who is serving as the
+        comparison group? Are already-treated units being used as
+        controls? Could anticipation affect the periods immediately
+        before treatment? Are treatment effects likely to vary across
+        cohorts?
+      </p>
+
+      <p>
+        Only after those questions are addressed should the visual pattern
+        be given a causal interpretation.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Takeaway</h2>
+
+      <p>
+        Event studies remain extremely useful because they make treatment
+        dynamics visible.
+      </p>
+
+      <p>
+        But visualization does not replace identification.
+      </p>
+
+      <p>
+        In staggered-adoption designs, a clean-looking set of pre-trends
+        and post-treatment coefficients may conceal complicated
+        comparisons.
+      </p>
+
+      <div class="highlight">
+        <p>
+          The graph should be the visualization of a credible causal
+          design—not the evidence that the design is credible.
+        </p>
+      </div>
+
+    </section>
+
+  </article>
+
+
+  <footer>
+    © 2026 Mina Mirazimi · Causal Inference Notes
+  </footer>
+
+</div>
+
+</body>
+</html>
