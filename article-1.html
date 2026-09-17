@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>When Two-Way Fixed Effects Stop Identifying What You Think | Mina Mirazimi</title>
+
+  <meta name="description"
+        content="Causal Inference Notes by Mina Mirazimi: staggered treatment adoption, heterogeneous treatment effects, TWFE, and modern difference-in-differences.">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Roboto, Helvetica, Arial, sans-serif;
+      color: #172033;
+      background: #ffffff;
+      line-height: 1.75;
+    }
+
+    .container {
+      width: min(900px, 90%);
+      margin: auto;
+    }
+
+    nav {
+      padding: 24px 0;
+      border-bottom: 1px solid #e8ebf0;
+    }
+
+    nav a {
+      color: #172033;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .hero {
+      padding: 85px 0 55px;
+    }
+
+    .tag {
+      color: #4967a9;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      font-size: clamp(38px, 6vw, 62px);
+      line-height: 1.08;
+      margin: 15px 0 25px;
+      letter-spacing: -2px;
+    }
+
+    .subtitle {
+      font-size: 21px;
+      color: #566074;
+      max-width: 780px;
+    }
+
+    article {
+      padding-bottom: 40px;
+    }
+
+    section {
+      padding: 30px 0;
+      border-top: 1px solid #edf0f4;
+    }
+
+    h2 {
+      font-size: 28px;
+      line-height: 1.25;
+      margin-bottom: 15px;
+    }
+
+    p {
+      color: #485267;
+      font-size: 17px;
+    }
+
+    .equation {
+      background: #f6f8fc;
+      padding: 22px 25px;
+      margin: 25px 0;
+      border-radius: 6px;
+      text-align: center;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 20px;
+      color: #273248;
+    }
+
+    .highlight {
+      background: #f6f8fc;
+      border-left: 4px solid #4967a9;
+      padding: 22px 25px;
+      margin: 25px 0;
+      border-radius: 4px;
+    }
+
+    .highlight p {
+      margin: 0;
+      color: #273248;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding: 35px 0;
+      border-top: 1px solid #e8ebf0;
+      color: #788195;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <nav>
+    <a href="index.html">← Back to Mina Mirazimi</a>
+  </nav>
+
+  <header class="hero">
+
+    <div class="tag">Causal Inference Notes · #1</div>
+
+    <h1>
+      When Two-Way Fixed Effects Stop Identifying What You Think
+    </h1>
+
+    <p class="subtitle">
+      Staggered adoption, heterogeneous treatment effects, and why
+      defining the estimand should come before choosing the estimator.
+    </p>
+
+  </header>
+
+
+  <article>
+
+    <section>
+
+      <p>
+        For decades, two-way fixed effects regressions have been one of
+        the standard tools for estimating difference-in-differences
+        models.
+      </p>
+
+      <div class="equation">
+        Y<sub>it</sub> = α<sub>i</sub> + λ<sub>t</sub> +
+        βD<sub>it</sub> + ε<sub>it</sub>
+      </div>
+
+      <p>
+        The specification looks familiar: unit fixed effects absorb
+        time-invariant differences across units, time fixed effects absorb
+        common shocks, and the treatment coefficient appears to summarize
+        the effect of the intervention.
+      </p>
+
+      <p>
+        In the canonical two-group, two-period setting, this interpretation
+        is often straightforward. But many real policy and business
+        settings are more complicated. Treatment begins at different times
+        for different units, effects may evolve after adoption, and the
+        magnitude of the effect may differ across cohorts.
+      </p>
+
+      <div class="highlight">
+        <p>
+          In these settings, the main question is no longer simply whether
+          a regression contains unit and time fixed effects. The question
+          is: what causal effect does the coefficient actually identify?
+        </p>
+      </div>
+
+    </section>
+
+
+    <section>
+
+      <h2>The Identification Problem</h2>
+
+      <p>
+        Suppose different states, cities, firms, or users adopt a policy
+        at different dates. Some units are never treated, some are
+        not-yet-treated, and others have already been treated.
+      </p>
+
+      <p>
+        A conventional TWFE regression can implicitly combine comparisons
+        across all of these groups. The difficulty is that an
+        already-treated unit may become part of the comparison group for
+        a unit treated later.
+      </p>
+
+      <p>
+        If treatment effects are constant across cohorts and over time,
+        this may not create a serious interpretation problem. But when
+        treatment effects are heterogeneous or dynamic, already-treated
+        observations are no longer clean untreated counterfactuals.
+      </p>
+
+      <p>
+        The resulting coefficient can therefore combine economically
+        different comparisons into a single number.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>From a Single β to Cohort-Time Treatment Effects</h2>
+
+      <p>
+        A more transparent way to formulate the causal question is to
+        define treatment effects by treatment cohort and calendar time.
+      </p>
+
+      <div class="equation">
+        ATT(g,t) =
+        E[Y<sub>t</sub>(1) − Y<sub>t</sub>(0) | G = g]
+      </div>
+
+      <p>
+        Here, <strong>g</strong> denotes the period in which a group first
+        receives treatment, while <strong>t</strong> denotes the period in
+        which the outcome is measured.
+      </p>
+
+      <p>
+        Instead of immediately asking for one treatment coefficient, we
+        first ask a more precise question:
+      </p>
+
+      <div class="highlight">
+        <p>
+          What is the treatment effect for units first treated in period
+          g, measured at time t?
+        </p>
+      </div>
+
+      <p>
+        This distinction matters because a policy may have a small effect
+        immediately after adoption and a larger effect several periods
+        later. Early adopters may also respond differently from later
+        adopters.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Why Aggregation Matters</h2>
+
+      <p>
+        Once cohort-time effects are estimated, we may still want a single
+        summary measure. But aggregation should be an explicit economic
+        choice rather than an accidental consequence of a regression
+        specification.
+      </p>
+
+      <p>
+        We might average effects across treated units, across cohorts, or
+        by event time. Each answers a different question.
+      </p>
+
+      <p>
+        For example, averaging by event time can tell us how treatment
+        effects evolve one, two, or three periods after adoption. Averaging
+        across cohorts may instead summarize the experience of groups that
+        entered treatment at different times.
+      </p>
+
+      <div class="highlight">
+        <p>
+          The weights are part of the estimand. They should reflect the
+          question we want to answer.
+        </p>
+      </div>
+
+    </section>
+
+
+    <section>
+
+      <h2>A Marketplace Example</h2>
+
+      <p>
+        Consider a platform that introduces a new advertising product
+        across markets at different times.
+      </p>
+
+      <p>
+        San Francisco receives the product first, Chicago several months
+        later, and additional markets adopt afterward. The platform wants
+        to know whether the advertising product increases seller revenue.
+      </p>
+
+      <p>
+        A conventional TWFE regression may appear natural because markets
+        adopt at different dates. But suppose the advertising effect grows
+        with time as sellers learn how to use the product.
+      </p>
+
+      <p>
+        When Chicago becomes treated, San Francisco is already treated and
+        may have experienced several months of treatment effects. Using San
+        Francisco as part of Chicago's comparison group can therefore
+        contaminate the counterfactual.
+      </p>
+
+      <p>
+        The economic question is not simply:
+        <em>What is β?</em>
+      </p>
+
+      <p>
+        It is closer to:
+        <em>What would seller revenue have been in each treated market at
+        each point in time had the advertising product not yet been
+        introduced?</em>
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>Modern Difference-in-Differences</h2>
+
+      <p>
+        Modern staggered-adoption methods make these comparisons more
+        explicit. Rather than automatically using all available
+        observations as controls, they construct treatment effects using
+        appropriate comparison groups such as never-treated or
+        not-yet-treated units under the relevant identifying assumptions.
+      </p>
+
+      <p>
+        The workflow becomes:
+      </p>
+
+      <div class="highlight">
+        <p>
+          Causal Question → Estimand → Identification → Comparison Group
+          → Estimator → Aggregation
+        </p>
+      </div>
+
+      <p>
+        This ordering is important. An estimator cannot tell us what
+        causal question we intended to answer.
+      </p>
+
+    </section>
+
+
+    <section>
+
+      <h2>The Broader Econometric Lesson</h2>
+
+      <p>
+        The staggered-adoption problem illustrates a broader principle in
+        applied econometrics: familiar regression specifications do not
+        automatically produce familiar causal estimands.
+      </p>
+
+      <p>
+        Fixed effects can control for important sources of variation, but
+        they do not by themselves determine whether the underlying
+        comparisons form credible counterfactuals.
+      </p>
+
+      <p>
+        Before estimating a model, we should be able to state clearly:
+        Who is treated? Who provides the counterfactual? When is the effect
+        measured? How are heterogeneous effects aggregated? And what
+        assumptions allow the comparison to be interpreted causally?
+      </p>
+
+      <div class="highlight">
+        <p>
+          The goal is not to abandon TWFE. It is to understand when the
+          coefficient corresponds to the causal object we care about—and
+          when it does not.
+        </p>
+      </div>
+
+    </section>
+
+
+    <section>
+
+      <h2>Takeaway</h2>
+
+      <p>
+        In staggered-adoption settings with heterogeneous treatment
+        effects, the central problem is not simply choosing a more
+        sophisticated estimator.
+      </p>
+
+      <p>
+        It is defining the causal object first.
+      </p>
+
+      <p>
+        Once the estimand is clear, the identification strategy,
+        comparison groups, estimator, and aggregation rule can be chosen
+        to match it.
+      </p>
+
+    </section>
+
+  </article>
+
+
+  <footer>
+    © 2026 Mina Mirazimi · Causal Inference Notes
+  </footer>
+
+</div>
+
+</body>
+</html>
